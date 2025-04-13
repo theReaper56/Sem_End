@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f7f7f7;
+            overflow: hidden;
+        }
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFD700, #87CEEB, #FF69B4, #32CD32);
+            background-size: 300% 300%;
+            animation: gradientAnimation 8s infinite;
+            z-index: -1;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .navbar {
+            width: 100%;
+            background: linear-gradient(to right, #467FD0, #265C99);
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border-bottom: 2px solid #265C99;
+        }
+        .navbar a {
+            color: #FFF;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 20px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #AEDFF7;
+            transform: scale(1.1);
+        }
+        .page-header {
+            margin-top: 100px;
+            text-align: center;
+            color: #265C99;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .filter-container {
+            margin: 20px auto;
+            text-align: center;
+            max-width: 800px;
+            padding: 15px;
+            background: #EFF4FB;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .filter-container label {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+        }
+        .filter-container input, .filter-container select {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #B3CDE8;
+            border-radius: 5px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+        .filter-container input:focus, .filter-container select:focus {
+            border-color: #265C99;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #events-list {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            background: #EFF4FB;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .event-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #B3CDE8;
+            border-radius: 5px;
+            background: #FFFFFF;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .event-item:hover {
+            background: #F5F6FA;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class = "background">
+        <nav class="navbar">
+            <a href="homepage.html">Home</a>
+            <a href="Event.html">Events</a>
+            <a href="internship.html">Internships</a>
+            <a href="Signin.html">Sign In</a>
+            <a href="Signup.html">Sign Up</a>
+            <a href="Admin.html">Admin Login</a>
+        </nav>
+        <h1 class="page-header">Events</h1>
+        <div class="filter-container">
+            <label for="search">Search Events:</label>
+            <input type="text" id="search" placeholder="Search for events...">
+            <label for="sort">Sort By:</label>
+            <select id="sort">
+                <option value="date">Date</option>
+                <option value="location">Location</option>
+            </select>
+            <label for="category">Filter By Category:</label>
+            <select id="category">
+                <option value="all">All Categories</option>
+                <option value="workshop">Workshop</option>
+                <option value="competition">Competition</option>
+                <option value="seminar">Seminar</option>
+            </select>
+        </div>
+        <div id="events-list">
+            <!-- Event details will be dynamically loaded here -->
+            <div class="event-item">
+                <p><strong>Event Name:</strong> Workshop on AI</p>
+                <p><strong>Date:</strong> 15th April 2025</p>
+                <p><strong>Location:</strong> New York</p>
+                <p><strong>Category:</strong> Workshop</p>
+            </div>
+            <div class="event-item">
+                <p><strong>Event Name:</strong> Coding Competition</p>
+                <p><strong>Date:</strong> 20th April 2025</p>
+                <p><strong>Location:</strong> San Francisco</p>
+                <p><strong>Category:</strong> Competition</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

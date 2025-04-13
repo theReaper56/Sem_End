@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internships</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #DDEAFE, #B3CDE8);
+            color: #333;
+            position: relative;
+        }
+        /* Mosaic pattern styling for texture */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20px 20px, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                              linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+        }
+        .navbar {
+            width: 100%;
+            background: linear-gradient(to right, #467FD0, #265C99);
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border-bottom: 2px solid #265C99;
+        }
+        .navbar a {
+            color: #FFF;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 20px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #AEDFF7;
+            transform: scale(1.1);
+        }
+        .page-header {
+            margin-top: 100px;
+            text-align: center;
+            color: #265C99;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .filter-container {
+            margin: 20px auto;
+            text-align: center;
+            max-width: 800px;
+            padding: 15px;
+            background: #EFF4FB;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .filter-container label {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+        }
+        .filter-container input, .filter-container select {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #B3CDE8;
+            border-radius: 5px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+        .filter-container input:focus, .filter-container select:focus {
+            border-color: #265C99;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #internships-list {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 15px;
+            background: #EFF4FB;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .internship-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #B3CDE8;
+            border-radius: 5px;
+            background: #FFFFFF;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .internship-item:hover {
+            background: #F5F6FA;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="homepage.html">Home</a>
+        <a href="Event.html">Events</a>
+        <a href="internship.html">Internships</a>
+        <a href="Signin.html">Sign In</a>
+        <a href="Signin.html">Sign Up</a>
+        <a href="Admin.html">Admin Login</a>
+    </nav>
+    <h1 class="page-header">Internships</h1>
+    <div class="filter-container">
+        <label for="search">Search Internships:</label>
+        <input type="text" id="search" placeholder="Search for internships...">
+        <label for="sort">Sort By:</label>
+        <select id="sort">
+            <option value="date">Start Date</option>
+            <option value="location">Location</option>
+        </select>
+        <label for="category">Filter By Category:</label>
+        <select id="category">
+            <option value="all">All Categories</option>
+            <option value="technology">Technology</option>
+            <option value="marketing">Marketing</option>
+            <option value="finance">Finance</option>
+        </select>
+    </div>
+    <div id="internships-list">
+        <!-- Internship details will be dynamically loaded here -->
+        <div class="internship-item">
+            <p><strong>Internship Title:</strong> Software Developer Intern</p>
+            <p><strong>Start Date:</strong> 1st May 2025</p>
+            <p><strong>Location:</strong> New York</p>
+            <p><strong>Category:</strong> Technology</p>
+        </div>
+        <div class="internship-item">
+            <p><strong>Internship Title:</strong> Digital Marketing Intern</p>
+            <p><strong>Start Date:</strong> 10th May 2025</p>
+            <p><strong>Location:</strong> Los Angeles</p>
+            <p><strong>Category:</strong> Marketing</p>
+        </div>
+    </div>
+</body>
+</html>

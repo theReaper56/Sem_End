@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Hub</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f7f7f7;
+            overflow: hidden;
+        }
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFD700, #87CEEB, #FF69B4, #32CD32);
+            background-size: 400% 400%;
+            animation: gradientAnimation 8s infinite;
+            z-index: -1;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* Mosaic pattern background for texture */
+       
+        .navbar {
+            width: 100%;
+            background: linear-gradient(to right, #0e1c30, #010203);
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border-bottom: 2px solid #265C99;
+        }
+        .navbar a {
+            color: #FFF;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 20px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #AEDFF7;
+            transform: scale(1.1);
+        }
+        .banner {
+
+            text-align: center;
+            padding: 50px 61px;
+            background: #ffffffde;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .banner h1 {
+            font-size: 40px;
+            font-weight: bold;
+            color: #265C99;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+        .banner p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .banner-buttons a {
+            margin: 10px;
+            padding: 12px 25px;
+            background: #265C99;
+            color: #FFF;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .banner-buttons a:hover {
+            background: #467FD0;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+        .carousel {
+            margin: 50px auto;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            max-width: 80%;
+            background: #EFF4FB;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        .carousel img {
+            width: 300px;
+            height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .carousel img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            margin: 100px;
+        }
+        
+    </style>
+</head>
+<>
+    <div class = "background"></div>
+        <nav class="navbar">
+            <a href="Event.html">Events</a>
+            <a href="internship.html">Internships</a>
+            <a href="Signin.html">Sign In</a>
+            <a href="Signup.html">Sign Up</a>
+            <a href="Admin.html">Admin Login</a>
+        </nav>
+        <div class="container">
+            <div class="banner">
+                <h1>Welcome to Our Professional Hub!</h1>
+                <p>Explore premium events, internships, and networking opportunities.</p>
+                <div class="banner-buttons">
+                    <a href="Event.html">Explore Events</a>
+                    <a href="internship.html">Discover Internships</a>
+                </div>
+            </div>
+            <div class="carousel">
+                <img src="https://via.placeholder.com/300x200.png?text=Workshop" alt="Workshop">
+                <img src="https://via.placeholder.com/300x200.png?text=Competition" alt="Competition">
+                <img src="https://via.placeholder.com/300x200.png?text=Internship" alt="Internship">
+            </div>
+        </div>
+</body>
+</html>
