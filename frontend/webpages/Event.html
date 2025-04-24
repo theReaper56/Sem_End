@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <link rel="stylesheet" href="/frontend/css/event.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="homepage.html">Home</a>
+        <a href="internship.html">Internships</a>
+        <a href="Signin.html">Sign In</a>
+        <a href="Signup.html">Sign Up</a>
+        <a href="Admin.html">Admin Login</a>
+    </nav>
+    <h1 class="page-header">Events</h1>
+    <div class="filter-container">
+        <label for="search">Search Events:</label>
+        <input type="text" id="search" placeholder="Search for events...">
+        <label for="sort">Sort By:</label>
+        <select id="sort">
+            <option value="date">Date</option>
+            <option value="location">Location</option>
+        </select>
+        <label for="category">Filter By Category:</label>
+        <select id="category">
+            <option value="all">All Categories</option>
+            <option value="workshop">Workshop</option>
+            <option value="competition">Competition</option>
+            <option value="seminar">Seminar</option>
+        </select>
+    </div>
+    <div class="events-list">
+        <div class="event-item">
+            <h2 class="event-title">Workshop on AI</h2>
+            <p class="event-details">Date: 15th April 2025</p>
+            <p class="event-details">Location: New York</p>
+            <p class="event-details">Category: Workshop</p>
+        </div>
+        <div class="event-item">
+            <h2 class="event-title">Coding Competition</h2>
+            <p class="event-details">Date: 20th April 2025</p>
+            <p class="event-details">Location: San Francisco</p>
+            <p class="event-details">Category: Competition</p>
+        </div>
+    </div>
+</body>
+</html>
