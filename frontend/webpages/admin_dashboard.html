@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/frontend/css/admin_dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active" data-target="dashboard-section">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </li>
+                <li data-target="events-section">
+                    <i class="fas fa-calendar-alt"></i> Events
+                </li>
+                <li data-target="internships-section">
+                    <i class="fas fa-briefcase"></i> Internships
+                </li>
+                <li data-target="users-section">
+                    <i class="fas fa-users"></i> Users
+                </li>
+                <li>
+                    <form action="/api/auth/logout" method="POST" id="logout-form">
+                        <button type="submit" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <header class="top-bar">
+                <div class="admin-info">
+                    <i class="fas fa-user-shield"></i>
+                    <span id="admin-name">Admin</span>
+                </div>
+            </header>
+
+            <div class="section active" id="dashboard-section">
+                <h1>Dashboard Overview</h1>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Total Users</h3>
+                            <p id="total-users">Loading...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Total Events</h3>
+                            <p id="total-events">Loading...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Total Internships</h3>
+                            <p id="total-internships">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>New Event Added</h3>
+                                <p>Tech Workshop was added by Admin</p>
+                                <span class="time">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>New User Registered</h3>
+                                <p>John Doe joined the platform</p>
+                                <span class="time">5 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="events-section">
+                <div class="section-header">
+                    <h1>Manage Events</h1>
+                    <button class="add-btn" id="add-event-btn">
+                        <i class="fas fa-plus"></i> Add New Event
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-table-body">
+                            <tr>
+                                <td colspan="5">Loading events...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section" id="internships-section">
+                <div class="section-header">
+                    <h1>Manage Internships</h1>
+                    <button class="add-btn" id="add-internship-btn">
+                        <i class="fas fa-plus"></i> Add New Internship
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Company</th>
+                                <th>Duration</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="internships-table-body">
+                            <tr>
+                                <td colspan="5">Loading internships...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section" id="users-section">
+                <h1>Manage Users</h1>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Registration Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr>
+                                <td colspan="5">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal" id="event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Event</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            
+            <!-- Update to the event form in the modal -->
+            <form id="event-form" action="/api/events" method="POST">
+                <div class="form-group">
+                    <label for="event-title">Title:</label>
+                    <input type="text" id="event-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-date">Date:</label>
+                    <input type="date" id="event-date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-time">Time:</label>
+                    <input type="time" id="event-time" name="time" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-location">Location:</label>
+                    <input type="text" id="event-location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-category">Category:</label>
+                    <select id="event-category" name="category" required>
+                        <option value="workshop">Workshop</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="competition">Competition</option>
+                        <option value="conference">Conference</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="event-description">Description:</label>
+                    <textarea id="event-description" name="description" rows="5" required></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="submit-btn">Add Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Internship Modal -->
+    <div class="modal" id="internship-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Internship</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="internship-form" action="/api/internships/add" method="POST">
+                <div class="form-group">
+                    <label for="internship-title">Title:</label>
+                    <input type="text" id="internship-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="internship-company">Company:</label>
+                    <input type="text" id="internship-company" name="company" required>
+                </div>
+                <div class="form-group">
+                    <label for="internship-location">Location:</label>
+                    <input type="text" id="internship-location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="internship-duration">Duration (weeks):</label>
+                    <input type="number" id="internship-duration" name="duration" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="internship-type">Type:</label>
+                    <select id="internship-type" name="type" required>
+                        <option value="remote">Remote</option>
+                        <option value="onsite">Onsite</option>
+                        <option value="hybrid">Hybrid</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="internship-description">Description:</label>
+                    <textarea id="internship-description" name="description" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="internship-requirements">Requirements:</label>
+                    <textarea id="internship-requirements" name="requirements" rows="5" required></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="submit-btn">Add Internship</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                // Skip for logout button
+                if (this.querySelector('form')) return;
+                
+                // Remove active class from all items
+                document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show target section
+                const targetSection = this.getAttribute('data-target');
+                document.getElementById(targetSection).classList.add('active');
+            });
+        });
+
+        // Modal functionality
+        document.getElementById('add-event-btn').addEventListener('click', function() {
+            document.getElementById('event-modal').style.display = 'block';
+        });
+
+        document.getElementById('add-internship-btn').addEventListener('click', function() {
+            document.getElementById('internship-modal').style.display = 'block';
+        });
+
+        document.querySelectorAll('.close-modal, .cancel-btn').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            });
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Fetch data from API endpoints
+        async function fetchData() {
+            try {
+                // Fetch admin info
+                const adminResponse = await fetch('/api/auth/check-auth');
+                const adminData = await adminResponse.json();
+                if (adminData.admin) {
+                    document.getElementById('admin-name').textContent = adminData.admin.username;
+                }
+
+                // Here you would add code to fetch and display events, internships, and users
+                // This is just placeholder code that would need to be implemented with your actual API
+                
+                // Example:
+                // const eventsResponse = await fetch('/api/events');
+                // const eventsData = await eventsResponse.json();
+                // document.getElementById('total-events').textContent = eventsData.length;
+                // renderEventsTable(eventsData);
+                
+                // For now, set some dummy data
+                document.getElementById('total-users').textContent = '156';
+                document.getElementById('total-events').textContent = '12';
+                document.getElementById('total-internships').textContent = '8';
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Call fetch data on page load
+        window.addEventListener('DOMContentLoaded', fetchData);
+    </script>
+</body>
+</html>

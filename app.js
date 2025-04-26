@@ -14,16 +14,48 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'your_fallback_secret_key',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
+  saveUninitialized: false,
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production', 
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 // Serve static files
 app.use('/frontend', express.static(path.join(__dirname, 'frontend')));
 app.use('/css', express.static(path.join(__dirname, 'frontend/css')));
 app.use('/webpages', express.static(path.join(__dirname, 'frontend/webpages')));
+
+// Auth middleware to protect routes
+const authMiddleware = (req, res, next) => {
+  // Public pages that don't require authentication
+  const publicPages = [
+    '/webpages/homepage.html',
+    '/webpages/Signup.html',
+    '/webpages/Signin.html',
+    '/webpages/Admin.html'
+  ];
+  
+  // Check if the requested path is a protected page
+  if (!publicPages.includes(req.path)) {
+    // Admin pages
+    if (req.path.includes('admin-') && !req.session.admin) {
+      return res.redirect('/webpages/Admin.html?error=Please login as admin');
+    }
+    
+    // User dashboard and other protected pages
+    if (req.path.includes('dashboard') && !req.session.user) {
+      return res.redirect('/webpages/Signin.html?error=Please login to continue');
+    }
+  }
+  
+  next();
+};
+
+// Apply auth middleware to webpages
+app.use('/webpages', authMiddleware);
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -35,24 +67,18 @@ app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/internships', internshipRoutes);
 
-// Route protection middleware
-app.use((req, res, next) => {
-  // Protect admin routes
-  if (req.path.startsWith('/admin') && !req.session.admin) {
-    return res.redirect('/webpages/Admin.html');
-  }
-  
-  // Protect user routes
-  if (req.path.startsWith('/webpages') && !req.session.user) {
-    return res.redirect('/webpages/Signin.html');
-  }
-  
-  next();
-});
-
 // Root route
 app.get('/', (req, res) => {
   res.redirect('/webpages/homepage.html');
+});
+
+// Define routes for sign-in and sign-up for better navigation
+app.get('/signin', (req, res) => {
+  res.redirect('/webpages/Signin.html');
+});
+
+app.get('/signup', (req, res) => {
+  res.redirect('/webpages/Signup.html');
 });
 
 // Error handling middleware

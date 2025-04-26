@@ -7,59 +7,133 @@
     <link rel="stylesheet" href="/frontend/css/internship.css">
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-          try {
-            const response = await fetch('/api/internships');
-            const internships = await response.json();
-            
-            const internshipsList = document.querySelector('.internships-list');
-            internshipsList.innerHTML = '';
-            
-            internships.forEach(internship => {
-              const internshipItem = document.createElement('div');
-              internshipItem.className = 'internship-item';
-              internshipItem.innerHTML = `
-                <h2 class="internship-title">${internship.title}</h2>
-                <p class="internship-details">Company: ${internship.company}</p>
-                <p class="internship-details">Start Date: ${new Date(internship.start_date).toLocaleDateString()}</p>
-                <p class="internship-details">Location: ${internship.location}</p>
-                <p class="internship-details">Category: ${internship.category}</p>
-                <a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
-              `;
-              internshipsList.appendChild(internshipItem);
-            });
-        
-            // Filter/Sort functionality
-            document.querySelectorAll('select, input').forEach(element => {
-              element.addEventListener('change', updateFilters);
-            });
-        
-            async function updateFilters() {
-              const search = document.getElementById('search').value.toLowerCase();
-              const sortBy = document.getElementById('sort').value;
-              const category = document.getElementById('category').value;
-        
-              const res = await fetch('/api/internships');
-              let filteredInternships = await res.json();
-        
-              filteredInternships = filteredInternships.filter(internship => {
-                return (internship.title.toLowerCase().includes(search) &&
-                       (category === 'all' || internship.category === category));
-              });
-        
-              filteredInternships.sort((a, b) => {
-                if (sortBy === 'date') return new Date(a.start_date) - new Date(b.start_date);
-                if (sortBy === 'location') return a.location.localeCompare(b.location);
-                return 0;
-              });
-        
-              internshipsList.innerHTML = '';
-              filteredInternships.forEach(createInternshipElement);
-            }
-          } catch (error) {
-            console.error('Error loading internships:', error);
-          }
-        });
+		document.addEventListener('DOMContentLoaded', async () => {
+			const internshipsList = document.querySelector('.internships-list');
+			
+			// Function to create internship element
+			function createInternshipElement(internship) {
+			const internshipItem = document.createElement('div');
+			internshipItem.className = 'internship-item';
+			
+			// Format date
+			const startDate = new Date(internship.start_date);
+			const formattedDate = startDate.toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			});
+			
+			internshipItem.innerHTML = `
+				<h2 class="internship-title">${internship.title}</h2>
+				<p class="internship-details">Company: ${internship.company}</p>
+				<p class="internship-details">Start Date: ${formattedDate}</p>
+				<p class="internship-details">Location: ${internship.location}</p>
+				<p class="internship-details">Duration: ${internship.duration} weeks</p>
+				<p class="internship-details">Category: ${internship.category.charAt(0).toUpperCase() + internship.category.slice(1)}</p>
+				${internship.description ? `<p class="internship-description">${internship.description}</p>` : ''}
+				<a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
+			`;
+			
+			internshipsList.appendChild(internshipItem);
+			}
+			
+			// Function to load internships
+			async function loadInternships() {
+			try {
+				internshipsList.innerHTML = '<div class="loading">Loading internships...</div>';
+				
+				const response = await fetch('/api/internships');
+				if (!response.ok) {
+				throw new Error('Failed to fetch internships');
+				}
+				
+				const internships = await response.json();
+				
+				internshipsList.innerHTML = '';
+				
+				if (internships.length === 0) {
+				internshipsList.innerHTML = '<div class="no-results">No internships found.</div>';
+				return;
+				}
+				
+				internships.forEach(createInternshipElement);
+				
+				// Set up filter functionality
+				setupFilters(internships);
+				
+			} catch (error) {
+				console.error('Error loading internships:', error);
+				internshipsList.innerHTML = '<div class="error">Failed to load internships. Please try again later.</div>';
+			}
+			}
+			
+			// Function to set up filters
+			function setupFilters(allInternships) {
+			const searchInput = document.getElementById('search');
+			const sortSelect = document.getElementById('sort');
+			const categorySelect = document.getElementById('category');
+			
+			// Populate category select with available categories
+			const categories = [...new Set(allInternships.map(internship => internship.category))];
+			categories.forEach(category => {
+				if (!categorySelect.querySelector(`option[value="${category}"]`)) {
+				const option = document.createElement('option');
+				option.value = category;
+				option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+				categorySelect.appendChild(option);
+				}
+			});
+			
+			// Filter function
+			function filterInternships() {
+				const searchTerm = searchInput.value.toLowerCase();
+				const sortBy = sortSelect.value;
+				const categoryFilter = categorySelect.value;
+				
+				let filteredInternships = [...allInternships];
+				
+				// Apply search filter
+				if (searchTerm) {
+				filteredInternships = filteredInternships.filter(internship => 
+					internship.title.toLowerCase().includes(searchTerm) || 
+					internship.company.toLowerCase().includes(searchTerm) ||
+					internship.description?.toLowerCase().includes(searchTerm) ||
+					internship.location.toLowerCase().includes(searchTerm)
+				);
+				}
+				
+				// Apply category filter
+				if (categoryFilter !== 'all') {
+				filteredInternships = filteredInternships.filter(internship => internship.category === categoryFilter);
+				}
+				
+				// Apply sorting
+				if (sortBy === 'date') {
+				filteredInternships.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+				} else if (sortBy === 'location') {
+				filteredInternships.sort((a, b) => a.location.localeCompare(b.location));
+				}
+				
+				// Update display
+				internshipsList.innerHTML = '';
+				
+				if (filteredInternships.length === 0) {
+				internshipsList.innerHTML = '<div class="no-results">No internships match your criteria.</div>';
+				return;
+				}
+				
+				filteredInternships.forEach(createInternshipElement);
+			}
+			
+			// Add event listeners to filter inputs
+			searchInput.addEventListener('input', filterInternships);
+			sortSelect.addEventListener('change', filterInternships);
+			categorySelect.addEventListener('change', filterInternships);
+			}
+			
+			// Load internships on page load
+			loadInternships();
+		});
         </script>
 
 </head>

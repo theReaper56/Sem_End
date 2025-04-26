@@ -6,17 +6,19 @@
     <title>Sign Up</title>
     <link rel="stylesheet" href="/frontend/css/signup.css">
 
-    <!-- <script>
+    <script>
         // Show error message if present
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        if (error) {
-          const errorDiv = document.createElement('div');
-          errorDiv.className = 'error-message';
-          errorDiv.textContent = error;
-          document.querySelector('form').prepend(errorDiv);
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = error;
+                document.querySelector('form').prepend(errorDiv);
+            }
         }
-    </script> -->
+    </script>
 
 </head>
 <body>
@@ -24,7 +26,7 @@
     <div class="container">
         <div class="education-icon"></div>
         <h1>Sign Up</h1>
-        <form action="/api/auth/signin" method="POST">
+        <form action="/api/auth/signup" method="POST">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required placeholder="Enter your name">
             
