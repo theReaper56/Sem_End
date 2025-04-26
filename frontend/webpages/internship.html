@@ -6,6 +6,62 @@
     <title>Internships</title>
     <link rel="stylesheet" href="/frontend/css/internship.css">
 
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const response = await fetch('/api/internships');
+            const internships = await response.json();
+            
+            const internshipsList = document.querySelector('.internships-list');
+            internshipsList.innerHTML = '';
+            
+            internships.forEach(internship => {
+              const internshipItem = document.createElement('div');
+              internshipItem.className = 'internship-item';
+              internshipItem.innerHTML = `
+                <h2 class="internship-title">${internship.title}</h2>
+                <p class="internship-details">Company: ${internship.company}</p>
+                <p class="internship-details">Start Date: ${new Date(internship.start_date).toLocaleDateString()}</p>
+                <p class="internship-details">Location: ${internship.location}</p>
+                <p class="internship-details">Category: ${internship.category}</p>
+                <a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
+              `;
+              internshipsList.appendChild(internshipItem);
+            });
+        
+            // Filter/Sort functionality
+            document.querySelectorAll('select, input').forEach(element => {
+              element.addEventListener('change', updateFilters);
+            });
+        
+            async function updateFilters() {
+              const search = document.getElementById('search').value.toLowerCase();
+              const sortBy = document.getElementById('sort').value;
+              const category = document.getElementById('category').value;
+        
+              const res = await fetch('/api/internships');
+              let filteredInternships = await res.json();
+        
+              filteredInternships = filteredInternships.filter(internship => {
+                return (internship.title.toLowerCase().includes(search) &&
+                       (category === 'all' || internship.category === category));
+              });
+        
+              filteredInternships.sort((a, b) => {
+                if (sortBy === 'date') return new Date(a.start_date) - new Date(b.start_date);
+                if (sortBy === 'location') return a.location.localeCompare(b.location);
+                return 0;
+              });
+        
+              internshipsList.innerHTML = '';
+              filteredInternships.forEach(createInternshipElement);
+            }
+          } catch (error) {
+            console.error('Error loading internships:', error);
+          }
+        });
+        </script>
+
 </head>
 <body>
     <nav class="navbar">

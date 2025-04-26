@@ -5,6 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events</title>
     <link rel="stylesheet" href="/frontend/css/event.css">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const response = await fetch('/api/events');
+            const events = await response.json();
+            
+            const eventsList = document.querySelector('.events-list');
+            eventsList.innerHTML = '';
+            
+            events.forEach(event => {
+              const eventItem = document.createElement('div');
+              eventItem.className = 'event-item';
+              eventItem.innerHTML = `
+                <h2 class="event-title">${event.title}</h2>
+                <p class="event-details">Date: ${new Date(event.date).toLocaleDateString()}</p>
+                <p class="event-details">Location: ${event.location}</p>
+                <p class="event-details">Category: ${event.category}</p>
+              `;
+              eventsList.appendChild(eventItem);
+            });
+        
+            // Filter/Sort functionality
+            document.querySelectorAll('select, input').forEach(element => {
+              element.addEventListener('change', updateFilters);
+            });
+        
+            async function updateFilters() {
+              const search = document.getElementById('search').value.toLowerCase();
+              const sortBy = document.getElementById('sort').value;
+              const category = document.getElementById('category').value;
+        
+              const res = await fetch('/api/events');
+              let filteredEvents = await res.json();
+        
+              filteredEvents = filteredEvents.filter(event => {
+                return (event.title.toLowerCase().includes(search) &&
+                       (category === 'all' || event.category === category));
+              });
+        
+              filteredEvents.sort((a, b) => {
+                if (sortBy === 'date') return new Date(a.date) - new Date(b.date);
+                if (sortBy === 'location') return a.location.localeCompare(b.location);
+                return 0;
+              });
+        
+              eventsList.innerHTML = '';
+              filteredEvents.forEach(createEventElement);
+            }
+          } catch (error) {
+            console.error('Error loading events:', error);
+          }
+        });
+        </script>
 </head>
 <body>
     <nav class="navbar">
