@@ -36,10 +36,11 @@ body {
 .sidebar-menu {
     list-style: none;
     padding: 0;
+    display: f;
 }
 
 .sidebar-menu li {
-    padding: 15px 20px;
+    padding: 0px;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
@@ -52,6 +53,7 @@ body {
 
 .sidebar-menu li.active {
     background-color: #3498db;
+    padding: 16px 20px;
 }
 
 .sidebar-menu li i {
@@ -60,12 +62,18 @@ body {
 }
 
 .sidebar-menu a {
+    padding: 0;
     color: #ecf0f1;
     text-decoration: none;
     display: flex;
     align-items: center;
+    height: 50px;
     width: 100%;
+    left: 21px;
+    position: relative;
 }
+
+
 
 /* Main content styles */
 .content {

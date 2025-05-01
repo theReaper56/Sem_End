@@ -20,6 +20,8 @@
                 <li>
                     <a href="Event.html"><i class="fas fa-calendar-alt"></i> Events</a>
                 </li>
+
+
                 <li>
                     <a href="internship.html"><i class="fas fa-briefcase"></i> Internships</a>
                 </li>
@@ -63,7 +65,7 @@
                     </div>
                     <div class="stat-details">
                         <h3>Upcoming Events</h3>
-                        <p>12</p>
+                        <p id = "Event">12</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -72,7 +74,7 @@
                     </div>
                     <div class="stat-details">
                         <h3>Available Internships</h3>
-                        <p>8</p>
+                        <p id = "internship">8</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -158,5 +160,25 @@
             © UniLink 2025
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const responseE = await fetch('/api/events');
+                const events = await responseE.json();
+                const responseI = await fetch('/api/internships');
+                const internships = await responseI.json();
+
+                    
+                const eventNo = document.getElementById('Event');
+                eventNo.innerHTML = events.length;
+                const internshipsNo = document.getElementById('internship');
+                internshipsNo.innerHTML = internships.length;
+
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        });
+    </script>
 </body>
 </html>
