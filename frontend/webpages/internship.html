@@ -3,139 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Internships</title>
+    <title>Internships | UniLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/frontend/css/internship.css">
-
-    <script>
-		document.addEventListener('DOMContentLoaded', async () => {
-			const internshipsList = document.querySelector('.internships-list');
-			
-			// Function to create internship element
-			function createInternshipElement(internship) {
-			const internshipItem = document.createElement('div');
-			internshipItem.className = 'internship-item';
-			
-			// Format date
-			const startDate = new Date(internship.start_date);
-			const formattedDate = startDate.toLocaleDateString('en-US', {
-				year: 'numeric',
-				month: 'long',
-				day: 'numeric'
-			});
-			
-			internshipItem.innerHTML = `
-				<h2 class="internship-title">${internship.title}</h2>
-				<p class="internship-details">Company: ${internship.company}</p>
-				<p class="internship-details">Start Date: ${formattedDate}</p>
-				<p class="internship-details">Location: ${internship.location}</p>
-				<p class="internship-details">Duration: ${internship.duration} weeks</p>
-				<p class="internship-details">Category: ${internship.category.charAt(0).toUpperCase() + internship.category.slice(1)}</p>
-				${internship.description ? `<p class="internship-description">${internship.description}</p>` : ''}
-				<a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
-			`;
-			
-			internshipsList.appendChild(internshipItem);
-			}
-			
-			// Function to load internships
-			async function loadInternships() {
-			try {
-				internshipsList.innerHTML = '<div class="loading">Loading internships...</div>';
-				
-				const response = await fetch('/api/internships');
-				if (!response.ok) {
-				throw new Error('Failed to fetch internships');
-				}
-				
-				const internships = await response.json();
-				
-				internshipsList.innerHTML = '';
-				
-				if (internships.length === 0) {
-				internshipsList.innerHTML = '<div class="no-results">No internships found.</div>';
-				return;
-				}
-				
-				internships.forEach(createInternshipElement);
-				
-				// Set up filter functionality
-				setupFilters(internships);
-				
-			} catch (error) {
-				console.error('Error loading internships:', error);
-				internshipsList.innerHTML = '<div class="error">Failed to load internships. Please try again later.</div>';
-			}
-			}
-			
-			// Function to set up filters
-			function setupFilters(allInternships) {
-			const searchInput = document.getElementById('search');
-			const sortSelect = document.getElementById('sort');
-			const categorySelect = document.getElementById('category');
-			
-			// Populate category select with available categories
-			const categories = [...new Set(allInternships.map(internship => internship.category))];
-			categories.forEach(category => {
-				if (!categorySelect.querySelector(`option[value="${category}"]`)) {
-				const option = document.createElement('option');
-				option.value = category;
-				option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-				categorySelect.appendChild(option);
-				}
-			});
-			
-			// Filter function
-			function filterInternships() {
-				const searchTerm = searchInput.value.toLowerCase();
-				const sortBy = sortSelect.value;
-				const categoryFilter = categorySelect.value;
-				
-				let filteredInternships = [...allInternships];
-				
-				// Apply search filter
-				if (searchTerm) {
-				filteredInternships = filteredInternships.filter(internship => 
-					internship.title.toLowerCase().includes(searchTerm) || 
-					internship.company.toLowerCase().includes(searchTerm) ||
-					internship.description?.toLowerCase().includes(searchTerm) ||
-					internship.location.toLowerCase().includes(searchTerm)
-				);
-				}
-				
-				// Apply category filter
-				if (categoryFilter !== 'all') {
-				filteredInternships = filteredInternships.filter(internship => internship.category === categoryFilter);
-				}
-				
-				// Apply sorting
-				if (sortBy === 'date') {
-				filteredInternships.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
-				} else if (sortBy === 'location') {
-				filteredInternships.sort((a, b) => a.location.localeCompare(b.location));
-				}
-				
-				// Update display
-				internshipsList.innerHTML = '';
-				
-				if (filteredInternships.length === 0) {
-				internshipsList.innerHTML = '<div class="no-results">No internships match your criteria.</div>';
-				return;
-				}
-				
-				filteredInternships.forEach(createInternshipElement);
-			}
-			
-			// Add event listeners to filter inputs
-			searchInput.addEventListener('input', filterInternships);
-			sortSelect.addEventListener('change', filterInternships);
-			categorySelect.addEventListener('change', filterInternships);
-			}
-			
-			// Load internships on page load
-			loadInternships();
-		});
-        </script>
-
 </head>
 <body>
     <nav class="navbar">
@@ -145,38 +15,133 @@
         <a href="Signup.html">Sign Up</a>
         <a href="Admin.html">Admin Login</a>
     </nav>
+    
     <h1 class="page-header">Internship Opportunities</h1>
+    
     <div class="filter-container">
-        <label for="search">Search Internships:</label>
-        <input type="text" id="search" placeholder="Search for internships...">
-        <label for="sort">Sort By:</label>
-        <select id="sort">
-            <option value="date">Start Date</option>
-            <option value="location">Location</option>
-        </select>
-        <label for="category">Filter By Category:</label>
-        <select id="category">
-            <option value="all">All Categories</option>
-            <option value="technology">Technology</option>
-            <option value="marketing">Marketing</option>
-            <option value="finance">Finance</option>
-        </select>
+        <div>
+            <label for="search">Search Internships</label>
+            <input type="text" id="search" placeholder="Type internship name...">
+        </div>
+        <div>
+            <label for="sort">Sort By</label>
+            <select id="sort">
+                <option value="date">Start Date</option>
+                <option value="location">Location</option>
+            </select>
+        </div>
+        <div>
+            <label for="category">Filter Category</label>
+            <select id="category">
+                <option value="all">All Categories</option>
+                <option value="technology">Technology</option>
+                <option value="marketing">Marketing</option>
+                <option value="finance">Finance</option>
+            </select>
+        </div>
     </div>
+    
     <div class="internships-list">
         <div class="internship-item">
             <h2 class="internship-title">Software Developer Intern</h2>
-            <p class="internship-details">Start Date: 1st May 2025</p>
-            <p class="internship-details">Location: New York</p>
-            <p class="internship-details">Category: Technology</p>
+            <p class="internship-details"><i class="fas fa-building"></i> Company: TechCorp</p>
+            <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: May 1, 2025</p>
+            <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: New York</p>
+            <p class="internship-details"><i class="fas fa-tag"></i> Category: Technology</p>
             <a href="apply.html" class="internship-button">Apply Now</a>
         </div>
         <div class="internship-item">
             <h2 class="internship-title">Digital Marketing Intern</h2>
-            <p class="internship-details">Start Date: 10th May 2025</p>
-            <p class="internship-details">Location: Los Angeles</p>
-            <p class="internship-details">Category: Marketing</p>
+            <p class="internship-details"><i class="fas fa-building"></i> Company: MarketMasters</p>
+            <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: May 10, 2025</p>
+            <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: Los Angeles</p>
+            <p class="internship-details"><i class="fas fa-tag"></i> Category: Marketing</p>
             <a href="apply.html" class="internship-button">Apply Now</a>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/internships');
+                const internships = await response.json();
+                
+                const internshipsList = document.querySelector('.internships-list');
+                internshipsList.innerHTML = '';
+                
+                internships.forEach(internship => {
+                    const startDate = new Date(internship.start_date);
+                    const formattedDate = startDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    const internshipItem = document.createElement('div');
+                    internshipItem.className = 'internship-item';
+                    internshipItem.innerHTML = `
+                        <h2 class="internship-title">${internship.title}</h2>
+                        <p class="internship-details"><i class="fas fa-building"></i> Company: ${internship.company}</p>
+                        <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: ${formattedDate}</p>
+                        <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: ${internship.location}</p>
+                        <p class="internship-details"><i class="fas fa-tag"></i> Category: ${internship.category}</p>
+                        <a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
+                    `;
+                    internshipsList.appendChild(internshipItem);
+                });
+                
+                // Filter/Sort functionality
+                document.querySelectorAll('select, input').forEach(element => {
+                    element.addEventListener('change', updateFilters);
+                });
+                
+                async function updateFilters() {
+                    const search = document.getElementById('search').value.toLowerCase();
+                    const sortBy = document.getElementById('sort').value;
+                    const category = document.getElementById('category').value;
+                    
+                    const res = await fetch('/api/internships');
+                    let filteredInternships = await res.json();
+                    
+                    filteredInternships = filteredInternships.filter(internship => {
+                        return (internship.title.toLowerCase().includes(search) &&
+                               (category === 'all' || internship.category === category));
+                    });
+                    
+                    filteredInternships.sort((a, b) => {
+                        if (sortBy === 'date') return new Date(a.start_date) - new Date(b.start_date);
+                        if (sortBy === 'location') return a.location.localeCompare(b.location);
+                        return 0;
+                    });
+                    
+                    const internshipsList = document.querySelector('.internships-list');
+                    internshipsList.innerHTML = '';
+                    
+                    filteredInternships.forEach(internship => {
+                        const startDate = new Date(internship.start_date);
+                        const formattedDate = startDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        
+                        const internshipItem = document.createElement('div');
+                        internshipItem.className = 'internship-item';
+                        internshipItem.innerHTML = `
+                            <h2 class="internship-title">${internship.title}</h2>
+                            <p class="internship-details"><i class="fas fa-building"></i> Company: ${internship.company}</p>
+                            <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: ${formattedDate}</p>
+                            <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: ${internship.location}</p>
+                            <p class="internship-details"><i class="fas fa-tag"></i> Category: ${internship.category}</p>
+                            <a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
+                        `;
+                        internshipsList.appendChild(internshipItem);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading internships:', error);
+            }
+        });
+    </script>
 </body>
 </html>

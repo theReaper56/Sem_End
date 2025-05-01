@@ -3,44 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Sign Up | UniLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/frontend/css/signup.css">
-
-    <script>
-        // Show error message if present
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-            if (error) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.textContent = error;
-                document.querySelector('form').prepend(errorDiv);
-            }
-        }
-    </script>
-
 </head>
 <body>
-    <div class="background"></div>
     <div class="container">
-        <div class="education-icon"></div>
+        <div class="education-icon">
+            <i class="fas fa-user-graduate"></i>
+        </div>
         <h1>Sign Up</h1>
+        
         <form action="/api/auth/signup" method="POST">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required placeholder="Enter your name">
+            <div class="input-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your name">
+            </div>
             
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required placeholder="Enter your email">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
             
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required placeholder="Create a password">
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Create a password">
+            </div>
             
             <button type="submit">Sign Up</button>
         </form>
+        
         <div class="form-footer">
             <p>Already have an account? <a href="/signin">Sign in here</a></p>
         </div>
     </div>
+
+    <script>
+        // Show error message if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = error;
+            document.querySelector('form').prepend(errorDiv);
+        }
+    </script>
 </body>
 </html>

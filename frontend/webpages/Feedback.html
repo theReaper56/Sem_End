@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Section with Star Rating</title>
+    <title>Feedback | UniLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/frontend/css/feedback.css">
-    
 </head>
 <body>
     <div class="feedback-container">
         <h2>We Value Your Feedback</h2>
         <p>Rate your experience and share your thoughts with us.</p>
+        
         <!-- Star rating -->
         <div class="star-rating" id="star-rating">
             <span class="star" data-value="1">&#9733;</span>
@@ -19,8 +20,9 @@
             <span class="star" data-value="4">&#9733;</span>
             <span class="star" data-value="5">&#9733;</span>
         </div>
+        
         <form action="/submit-feedback" method="POST">
-            <textarea name="feedback" id="feedback" placeholder="Write your feedback here..." required></textarea>
+            <textarea name="feedback" placeholder="Write your feedback here..." required></textarea>
             <input type="hidden" name="rating" id="rating" value="0">
             <button type="submit">Submit Feedback</button>
         </form>
@@ -39,6 +41,29 @@
                 ratingInput.value = value; // Set rating value
                 for (let i = 0; i < value; i++) {
                     stars[i].classList.add('selected');
+                }
+            });
+            
+            // Hover effect
+            star.addEventListener('mouseover', () => {
+                const value = star.getAttribute('data-value');
+                for (let i = 0; i < 5; i++) {
+                    if (i < value) {
+                        stars[i].style.color = "#FFC107";
+                    } else {
+                        stars[i].style.color = "#D3E3FF";
+                    }
+                }
+            });
+            
+            star.addEventListener('mouseout', () => {
+                const currentRating = ratingInput.value;
+                for (let i = 0; i < 5; i++) {
+                    if (i < currentRating) {
+                        stars[i].style.color = "#FFC107";
+                    } else {
+                        stars[i].style.color = "#D3E3FF";
+                    }
                 }
             });
         });

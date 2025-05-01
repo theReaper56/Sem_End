@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="/frontend/css/admin.css">
-    <script>
-        // Show error message if present
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-            if (error) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.textContent = error;
-                document.querySelector('form').prepend(errorDiv);
-            }
-        }
-    </script>
+    <title>Admin Login | UniLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel = "stylesheet" href = "/frontend/css/admin.css">
 </head>
 <body>
+    <div class="logo">
+        <i class="fas fa-link"></i>
+        <span>UniLink</span>
+    </div>
+    
     <div class="login-container">
-        <h1>Admin Login</h1>
+        <h1>Admin Portal</h1>
         <form action="/api/auth/admin" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Login</button>
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <i class="fas fa-user"></i>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
         </form>
-        <div class="back-link">
-            <a href="homepage.html">Back to Homepage</a>
-        </div>
     </div>
 </body>
 </html>
