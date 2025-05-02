@@ -6,9 +6,31 @@
     <title>Internships | UniLink</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/frontend/css/internship.css">
+    <style>
+        select {
+            background-color: #007bff;
+            color: white;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        select option {
+            background-color: #0056b3;
+            color: white;
+        }
+
+    </style>
 </head>
 <body>
     <nav class="navbar">
+        <div class="welcome-text">
+            <div class="logo">
+                <i class="fas fa-link"></i>
+            </div>
+            <span style="color: aliceblue;">Welcome to UniLink</span>
+        </div>
         <a href="homepage.html">Home</a>
         <a href="Event.html">Events</a>
         <a href="Signin.html">Sign In</a>
@@ -26,7 +48,7 @@
         <div>
             <label for="sort">Sort By</label>
             <select id="sort">
-                <option value="date">Start Date</option>
+                <option value="deadline">Application Deadline</option>
                 <option value="location">Location</option>
             </select>
         </div>
@@ -34,112 +56,248 @@
             <label for="category">Filter Category</label>
             <select id="category">
                 <option value="all">All Categories</option>
-                <option value="technology">Technology</option>
+                <option value="software_development">Software Development</option>
+                <option value="data_science">Data Science</option>
+                <option value="design">Design</option>
                 <option value="marketing">Marketing</option>
                 <option value="finance">Finance</option>
+                <option value="operations">Operations</option>
             </select>
         </div>
     </div>
     
     <div class="internships-list">
+        <!-- Placeholder internships - will be replaced by real data -->
         <div class="internship-item">
             <h2 class="internship-title">Software Developer Intern</h2>
             <p class="internship-details"><i class="fas fa-building"></i> Company: TechCorp</p>
-            <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: May 1, 2025</p>
             <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: New York</p>
-            <p class="internship-details"><i class="fas fa-tag"></i> Category: Technology</p>
+            <p class="internship-details"><i class="fas fa-tag"></i> Category: Software Development</p>
+            <p class="internship-details"><i class="fas fa-hourglass-half"></i> Duration: 3 months</p>
+            <p class="internship-details"><i class="fas fa-money-bill-wave"></i> Stipend: $2000/month</p>
+            <p class="internship-details"><i class="fas fa-calendar-times"></i> Deadline: May 30, 2025</p>
             <a href="apply.html" class="internship-button">Apply Now</a>
         </div>
-        <div class="internship-item">
-            <h2 class="internship-title">Digital Marketing Intern</h2>
-            <p class="internship-details"><i class="fas fa-building"></i> Company: MarketMasters</p>
-            <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: May 10, 2025</p>
-            <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: Los Angeles</p>
-            <p class="internship-details"><i class="fas fa-tag"></i> Category: Marketing</p>
-            <a href="apply.html" class="internship-button">Apply Now</a>
+    </div>
+    
+    <!-- Internship Details Modal -->
+    <div id="internship-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h2 id="modal-title">Internship Title</h2>
+                <p id="modal-company" class="modal-company">Company Name</p>
+            </div>
+            
+            <div class="modal-detail">
+                <i class="fas fa-map-marker-alt"></i>
+                <span id="modal-location">Location</span>
+            </div>
+            
+            <div class="modal-detail">
+                <i class="fas fa-tag"></i>
+                <span id="modal-category">Category</span>
+            </div>
+            
+            <div class="modal-detail">
+                <i class="fas fa-hourglass-half"></i>
+                <span id="modal-duration">Duration</span>
+            </div>
+            
+            <div class="modal-detail" id="modal-stipend-container">
+                <i class="fas fa-money-bill-wave"></i>
+                <span id="modal-stipend">Stipend</span>
+            </div>
+            
+            <div class="modal-detail">
+                <i class="fas fa-calendar-times"></i>
+                <span id="modal-deadline">Application Deadline</span>
+            </div>
+            
+            <h3 class="description-header">Description</h3>
+            <div id="modal-description" class="modal-description">
+                Internship description will appear here.
+            </div>
+            
+            <div class="btn-container">
+                <button class="modal-btn cancel-btn" id="close-modal-btn">Close</button>
+                <button class="modal-btn apply-btn" id="apply-btn">Apply Now</button>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            let allInternships = [];
             try {
                 const response = await fetch('/api/internships');
-                const internships = await response.json();
+                allInternships = await response.json();
                 
+                renderInternships(allInternships);
+                
+                // Filter/Sort functionality
+                document.querySelectorAll('select, input').forEach(element => {
+                    element.addEventListener('change', updateFilters);
+                    element.addEventListener('keyup', updateFilters);
+                });
+                
+                // Set up modal functionality
+                setupModal();
+                
+            } catch (error) {
+                console.error('Error loading internships:', error);
+            }
+            
+            function renderInternships(internships) {
                 const internshipsList = document.querySelector('.internships-list');
                 internshipsList.innerHTML = '';
                 
+                if (internships.length === 0) {
+                    internshipsList.innerHTML = '<p class="no-results">No internships match your search criteria.</p>';
+                    return;
+                }
+                
                 internships.forEach(internship => {
-                    const startDate = new Date(internship.start_date);
-                    const formattedDate = startDate.toLocaleDateString('en-US', {
+                    const deadline = new Date(internship.deadline);
+                    const formattedDeadline = deadline.toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     });
+                    
+                    // Format category with proper spacing and capitalization
+                    const formattedCategory = internship.category
+                        .split('_')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
                     
                     const internshipItem = document.createElement('div');
                     internshipItem.className = 'internship-item';
                     internshipItem.innerHTML = `
                         <h2 class="internship-title">${internship.title}</h2>
                         <p class="internship-details"><i class="fas fa-building"></i> Company: ${internship.company}</p>
-                        <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: ${formattedDate}</p>
                         <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: ${internship.location}</p>
-                        <p class="internship-details"><i class="fas fa-tag"></i> Category: ${internship.category}</p>
-                        <a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
+                        <p class="internship-details"><i class="fas fa-tag"></i> Category: ${formattedCategory}</p>
+                        <p class="internship-details"><i class="fas fa-hourglass-half"></i> Duration: ${internship.duration}</p>
+                        ${internship.stipend ? `<p class="internship-details"><i class="fas fa-money-bill-wave"></i> Stipend: ${internship.stipend}</p>` : ''}
+                        <p class="internship-details"><i class="fas fa-calendar-times"></i> Deadline: ${formattedDeadline}</p>
+                        <button class="internship-button view-details" data-id="${internship.id}">View Details</button>
                     `;
                     internshipsList.appendChild(internshipItem);
                 });
                 
-                // Filter/Sort functionality
-                document.querySelectorAll('select, input').forEach(element => {
-                    element.addEventListener('change', updateFilters);
+                // Add event listeners to the "View Details" buttons
+                document.querySelectorAll('.view-details').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const internshipId = button.getAttribute('data-id');
+                        showInternshipDetails(internshipId);
+                    });
+                });
+            }
+            
+            async function updateFilters() {
+                const search = document.getElementById('search').value.toLowerCase();
+                const sortBy = document.getElementById('sort').value;
+                const category = document.getElementById('category').value;
+                
+                let filteredInternships = [...allInternships];
+                
+                // Apply filters
+                filteredInternships = filteredInternships.filter(internship => {
+                    return (internship.title.toLowerCase().includes(search) &&
+                            (category === 'all' || internship.category === category));
                 });
                 
-                async function updateFilters() {
-                    const search = document.getElementById('search').value.toLowerCase();
-                    const sortBy = document.getElementById('sort').value;
-                    const category = document.getElementById('category').value;
+                // Apply sorting
+                filteredInternships.sort((a, b) => {
+                    if (sortBy === 'deadline') return new Date(a.deadline) - new Date(b.deadline);
+                    if (sortBy === 'location') return a.location.localeCompare(b.location);
+                    return 0;
+                });
+                
+                renderInternships(filteredInternships);
+            }
+            
+            function setupModal() {
+                const modal = document.getElementById('internship-modal');
+                const closeModalBtn = document.getElementById('close-modal-btn');
+                const closeModalX = document.querySelector('.close-modal');
+                
+                // Close the modal when clicking the X or Close button
+                closeModalBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                closeModalX.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                // Close modal when clicking outside the modal content
+                window.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+                
+                // Setup the apply button in the modal
+                document.getElementById('apply-btn').addEventListener('click', () => {
+                    const applyUrl = `apply.html?id=${document.getElementById('apply-btn').getAttribute('data-id')}`;
+                    window.location.href = applyUrl;
+                });
+            }
+            
+            async function showInternshipDetails(internshipId) {
+                try {
+                    // Fetch the specific internship details
+                    const response = await fetch(`/api/internships/${internshipId}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch internship details');
+                    }
                     
-                    const res = await fetch('/api/internships');
-                    let filteredInternships = await res.json();
+                    const internship = await response.json();
                     
-                    filteredInternships = filteredInternships.filter(internship => {
-                        return (internship.title.toLowerCase().includes(search) &&
-                               (category === 'all' || internship.category === category));
+                    // Format date and category
+                    const deadline = new Date(internship.deadline);
+                    const formattedDeadline = deadline.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
                     });
                     
-                    filteredInternships.sort((a, b) => {
-                        if (sortBy === 'date') return new Date(a.start_date) - new Date(b.start_date);
-                        if (sortBy === 'location') return a.location.localeCompare(b.location);
-                        return 0;
-                    });
+                    const formattedCategory = internship.category
+                        .split('_')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
                     
-                    const internshipsList = document.querySelector('.internships-list');
-                    internshipsList.innerHTML = '';
+                    // Populate modal with internship details
+                    document.getElementById('modal-title').textContent = internship.title;
+                    document.getElementById('modal-company').textContent = internship.company;
+                    document.getElementById('modal-location').textContent = internship.location;
+                    document.getElementById('modal-category').textContent = formattedCategory;
+                    document.getElementById('modal-duration').textContent = internship.duration;
                     
-                    filteredInternships.forEach(internship => {
-                        const startDate = new Date(internship.start_date);
-                        const formattedDate = startDate.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        
-                        const internshipItem = document.createElement('div');
-                        internshipItem.className = 'internship-item';
-                        internshipItem.innerHTML = `
-                            <h2 class="internship-title">${internship.title}</h2>
-                            <p class="internship-details"><i class="fas fa-building"></i> Company: ${internship.company}</p>
-                            <p class="internship-details"><i class="fas fa-calendar-alt"></i> Start Date: ${formattedDate}</p>
-                            <p class="internship-details"><i class="fas fa-map-marker-alt"></i> Location: ${internship.location}</p>
-                            <p class="internship-details"><i class="fas fa-tag"></i> Category: ${internship.category}</p>
-                            <a href="apply.html?id=${internship.id}" class="internship-button">Apply Now</a>
-                        `;
-                        internshipsList.appendChild(internshipItem);
-                    });
+                    // Handle stipend (which may be null)
+                    const stipendContainer = document.getElementById('modal-stipend-container');
+                    if (internship.stipend) {
+                        document.getElementById('modal-stipend').textContent = internship.stipend;
+                        stipendContainer.style.display = 'flex';
+                    } else {
+                        stipendContainer.style.display = 'none';
+                    }
+                    
+                    document.getElementById('modal-deadline').textContent = formattedDeadline;
+                    document.getElementById('modal-description').textContent = internship.description || 'No description provided.';
+                    
+                    // Set the internship ID on the apply button
+                    document.getElementById('apply-btn').setAttribute('data-id', internship.id);
+                    
+                    // Show the modal
+                    document.getElementById('internship-modal').style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('Error fetching internship details:', error);
+                    alert('Failed to load internship details. Please try again later.');
                 }
-            } catch (error) {
-                console.error('Error loading internships:', error);
             }
         });
     </script>
