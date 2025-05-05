@@ -104,6 +104,22 @@ body {
     font-size: 1.2rem;
 }
 
+.user-icon {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.user-icon a {
+    color: #ecf0f1;
+    font-size: 2.2rem;
+    transition: color 0.3s;
+}
+
+.user-icon a:hover {
+    color: #3498db;
+}
+
 /* Banner styles */
 .banner {
     background-color: white;

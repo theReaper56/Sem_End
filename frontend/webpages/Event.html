@@ -118,7 +118,7 @@
             
             <div class="btn-container">
                 <button class="modal-btn cancel-btn" id="close-modal-btn">Close</button>
-                <button class="modal-btn register-btn" id="register-btn">Apply Now</button>
+                <button class="modal-btn apply-btn" id="apply-btn">Apply Now</button>
             </div>
         </div>
     </div>
@@ -227,16 +227,44 @@
                     }
                 });
                 
-                // Setup the register button in the modal
-                document.getElementById('register-btn').addEventListener('click', () => {
-                    const registerUrl = `register-event.html?id=${document.getElementById('register-btn').getAttribute('data-id')}`;
-                    window.location.href = registerUrl;
+                // Setup the apply button in the modal
+                document.getElementById('apply-btn').addEventListener('click', async () => {
+                    try {
+                        // Check if user is authenticated
+                        const response = await fetch('/api/auth/check-auth');
+                        const data = await response.json();
+                        
+                        if (data.authenticated) {
+                            // User is logged in, proceed with registration
+                            const eventId = document.getElementById('apply-btn').getAttribute('data-id');
+                            const registerResponse = await fetch(`/api/events/${eventId}/register`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            
+                            const result = await registerResponse.json();
+                            
+                            if (registerResponse.ok) {
+                                alert('Successfully registered for the event!');
+                                modal.style.display = 'none';
+                            } else {
+                                alert(result.error || 'Failed to register for the event');
+                            }
+                        } else {
+                            // User is not logged in, redirect to signin page
+                            window.location.href = '/webpages/Signin.html?error=Please sign in to register for events';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    }
                 });
             }
             
             async function showEventDetails(eventId) {
                 try {
-                    console.log('Fetching details for event:', eventId);
                     // Fetch the specific event details
                     const response = await fetch(`/api/events/${eventId}`);
                     if (!response.ok) {
@@ -244,7 +272,6 @@
                     }
                     
                     const event = await response.json();
-                    console.log('Received event data:', event);
                     
                     // Format date
                     const eventDate = new Date(event.date);
@@ -272,8 +299,8 @@
                     
                     document.getElementById('modal-description').textContent = event.description || 'No description provided.';
                     
-                    // Set the event ID on the register button
-                    document.getElementById('register-btn').setAttribute('data-id', event.id);
+                    // Set the event ID on the apply button
+                    document.getElementById('apply-btn').setAttribute('data-id', event.id);
                     
                     // Show the modal
                     document.getElementById('event-modal').style.display = 'block';

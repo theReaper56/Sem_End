@@ -240,9 +240,24 @@
                 });
                 
                 // Setup the apply button in the modal
-                document.getElementById('apply-btn').addEventListener('click', () => {
-                    const applyUrl = `apply.html?id=${document.getElementById('apply-btn').getAttribute('data-id')}`;
-                    window.location.href = applyUrl;
+                document.getElementById('apply-btn').addEventListener('click', async () => {
+                    try {
+                        // Check if user is authenticated
+                        const response = await fetch('/api/auth/check-auth');
+                        const data = await response.json();
+                        
+                        if (data.authenticated) {
+                            // User is logged in, proceed to apply page
+                            const applyUrl = `apply.html?id=${document.getElementById('apply-btn').getAttribute('data-id')}`;
+                            window.location.href = applyUrl;
+                        } else {
+                            // User is not logged in, redirect to signin page
+                            window.location.href = '/webpages/Signin.html?error=Please sign in to apply for internships';
+                        }
+                    } catch (error) {
+                        console.error('Error checking authentication:', error);
+                        alert('An error occurred. Please try again.');
+                    }
                 });
             }
             

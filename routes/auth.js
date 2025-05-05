@@ -147,4 +147,90 @@ router.get('/check-auth', (req, res) => {
   return res.json({ authenticated: false });
 });
 
+// Admin management routes
+router.get('/admin/list', async (req, res) => {
+  try {
+    // Check if the current user is an admin
+    if (!req.session.admin) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    // Get all admins
+    const [admins] = await db.query(
+      'SELECT id, username FROM admins'
+    );
+    
+    // Add isCurrent flag to identify the current admin
+    const adminsWithCurrentFlag = admins.map(admin => ({
+      ...admin,
+      isCurrent: admin.id === req.session.admin.id
+    }));
+    
+    res.json(adminsWithCurrentFlag);
+  } catch (error) {
+    console.error('Error fetching admins:', error);
+    res.status(500).json({ error: 'Failed to fetch admins' });
+  }
+});
+
+router.post('/admin/add', async (req, res) => {
+  try {
+    // Check if the current user is an admin
+    if (!req.session.admin) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    const { username, password } = req.body;
+
+    // Validate input
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    // Check if admin already exists
+    const [existingAdmins] = await db.query('SELECT * FROM admins WHERE username = ?', [username]);
+    if (existingAdmins.length > 0) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Create new admin
+    await db.query(
+      'INSERT INTO admins (username, password) VALUES (?, ?)',
+      [username, hashedPassword]
+    );
+    
+    res.status(201).json({ message: 'Admin created successfully' });
+  } catch (error) {
+    console.error('Error creating admin:', error);
+    res.status(500).json({ error: 'Failed to create admin' });
+  }
+});
+
+router.delete('/admin/:id', async (req, res) => {
+  try {
+    // Check if the current user is an admin
+    if (!req.session.admin) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    const adminId = req.params.id;
+
+    // Prevent deleting self
+    if (adminId === req.session.admin.id) {
+      return res.status(400).json({ error: 'Cannot delete your own account' });
+    }
+
+    // Delete admin
+    await db.query('DELETE FROM admins WHERE id = ?', [adminId]);
+    
+    res.json({ message: 'Admin deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting admin:', error);
+    res.status(500).json({ error: 'Failed to delete admin' });
+  }
+});
+
 module.exports = router;

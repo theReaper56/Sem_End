@@ -28,6 +28,46 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Register for an event (requires user authentication)
+router.post('/:id/register', async (req, res) => {
+  // Check if user is authenticated
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Please sign in to register for events' });
+  }
+
+  try {
+    const eventId = req.params.id;
+    const userId = req.session.user.id;
+
+    // Check if event exists
+    const [events] = await db.query('SELECT * FROM events WHERE id = ?', [eventId]);
+    if (events.length === 0) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Check if user is already registered
+    const [existingRegistrations] = await db.query(
+      'SELECT * FROM event_registrations WHERE event_id = ? AND user_id = ?',
+      [eventId, userId]
+    );
+
+    if (existingRegistrations.length > 0) {
+      return res.status(400).json({ error: 'You are already registered for this event' });
+    }
+
+    // Register user for the event
+    await db.query(
+      'INSERT INTO event_registrations (event_id, user_id) VALUES (?, ?)',
+      [eventId, userId]
+    );
+
+    res.status(201).json({ message: 'Successfully registered for the event' });
+  } catch (error) {
+    console.error('Error registering for event:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Create new event (Admin only)
 router.post('/', async (req, res) => {
   // Check if user is authenticated as admin

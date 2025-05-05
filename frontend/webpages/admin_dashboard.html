@@ -26,6 +26,9 @@
                 <li data-target="users-section">
                     <i class="fas fa-users"></i> Users
                 </li>
+                <li data-target="admins-section">
+                    <i class="fas fa-user-shield"></i> Admins
+                </li>
                 <li>
                     <form action="/api/auth/logout" method="POST" id="logout-form">
                         <button type="submit" class="logout-btn">
@@ -177,6 +180,31 @@
                     </table>
                 </div>
             </div>
+
+            <div class="section" id="admins-section">
+                <div class="section-header">
+                    <h1>Manage Admins</h1>
+                    <button class="add-btn" id="add-admin-btn">
+                        <i class="fas fa-plus"></i> Add New Admin
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admins-table-body">
+                            <tr>
+                                <td colspan="4">Loading admins...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -279,6 +307,34 @@
         </div>
     </div>
 
+    <!-- Add Admin Modal -->
+    <div class="modal" id="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Admin</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="admin-form" action="/api/auth/admin/add" method="POST">
+                <div class="form-group">
+                    <label for="admin-username">Username:</label>
+                    <input type="text" id="admin-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password:</label>
+                    <input type="password" id="admin-password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-confirm-password">Confirm Password:</label>
+                    <input type="password" id="admin-confirm-password" name="confirmPassword" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="submit-btn">Add Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Navigation functionality
         document.querySelectorAll('.sidebar-menu li').forEach(item => {
@@ -318,6 +374,10 @@
 
         document.getElementById('add-internship-btn').addEventListener('click', function() {
             document.getElementById('internship-modal').style.display = 'block';
+        });
+
+        document.getElementById('add-admin-btn').addEventListener('click', function() {
+            document.getElementById('admin-modal').style.display = 'block';
         });
 
         document.querySelectorAll('.close-modal, .cancel-btn').forEach(item => {
@@ -413,6 +473,38 @@
             }
         }
 
+        // Load and display admins
+        async function loadAdmins() {
+            try {
+                const response = await fetch('/api/auth/admin/list');
+                const admins = await response.json();
+                
+                const tableBody = document.getElementById('admins-table-body');
+                tableBody.innerHTML = '';
+                
+                admins.forEach(admin => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${admin.id}</td>
+                        <td>
+                            ${admin.username}
+                            ${admin.isCurrent ? '<span class="current-admin-badge">(You)</span>' : ''}
+                        </td>
+                        <td>
+                            ${!admin.isCurrent ? `
+                                <button class="action-btn delete" onclick="deleteAdmin(${admin.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading admins:', error);
+            }
+        }
+
         // Handle event form submission
         document.getElementById('event-form').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -486,6 +578,46 @@
             }
         });
 
+        // Handle admin form submission
+        document.getElementById('admin-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('admin-password').value;
+            const confirmPassword = document.getElementById('admin-confirm-password').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            const formData = {
+                username: document.getElementById('admin-username').value,
+                password: password
+            };
+
+            try {
+                const response = await fetch('/api/auth/admin/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    document.getElementById('admin-modal').style.display = 'none';
+                    this.reset();
+                    loadAdmins();
+                } else {
+                    const error = await response.json();
+                    alert('Error creating admin: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error submitting admin:', error);
+                alert('Error creating admin. Please try again.');
+            }
+        });
+
         // Delete event
         async function deleteEvent(id) {
             if (!confirm('Are you sure you want to delete this event?')) return;
@@ -528,6 +660,27 @@
             }
         }
 
+        // Delete admin
+        async function deleteAdmin(id) {
+            if (!confirm('Are you sure you want to delete this admin?')) return;
+            
+            try {
+                const response = await fetch(`/api/auth/admin/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadAdmins();
+                } else {
+                    const error = await response.json();
+                    alert('Error deleting admin: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error deleting admin:', error);
+                alert('Error deleting admin. Please try again.');
+            }
+        }
+
         // Fetch data from API endpoints
         async function fetchData() {
             try {
@@ -541,6 +694,7 @@
                 // Load initial data
                 loadEvents();
                 loadInternships();
+                loadAdmins();
                 
             } catch (error) {
                 console.error('Error fetching data:', error);

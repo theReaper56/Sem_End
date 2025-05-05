@@ -20,15 +20,11 @@
                 <li>
                     <a href="Event.html"><i class="fas fa-calendar-alt"></i> Events</a>
                 </li>
-
                 <li>
                     <a href="internship.html"><i class="fas fa-briefcase"></i> Internships</a>
                 </li>
                 <li>
                     <a href="Signin.html"><i class="fas fa-sign-in-alt"></i> Sign In</a>
-                </li>
-                <li>
-                    <a href="Signup.html"><i class="fas fa-user-plus"></i> Sign Up</a>
                 </li>
                 <li>
                     <a href="Admin.html"><i class="fas fa-user-shield"></i> Admin</a>
@@ -43,6 +39,11 @@
                         <i class="fas fa-link"></i>
                     </div>
                     <span style="color: aliceblue;">Welcome to UniLink</span>
+                </div>
+                <div id="user-icon" class="user-icon" style="display: none;">
+                    <a href="user_dashboard.html">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
                 </div>
             </header>
 
@@ -165,19 +166,28 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // Check authentication status
+                const authResponse = await fetch('/api/auth/check-auth');
+                const authData = await authResponse.json();
+                
+                const userIcon = document.getElementById('user-icon');
+                if (authData.authenticated) {
+                    userIcon.style.display = 'flex';
+                }
+
+                // Load event and internship counts
                 const responseE = await fetch('/api/events');
                 const events = await responseE.json();
                 const responseI = await fetch('/api/internships');
                 const internships = await responseI.json();
 
-                    
                 const eventNo = document.getElementById('Event');
                 eventNo.innerHTML = events.length;
                 const internshipsNo = document.getElementById('internship');
                 internshipsNo.innerHTML = internships.length;
 
             } catch (error) {
-                console.error('Error loading events:', error);
+                console.error('Error loading data:', error);
             }
         });
     </script>
